@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'roaster.apps.RoasterConfig',
+    'core.apps.CoreConfig',
     'rest_framework'
 ]
 
