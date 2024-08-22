@@ -2,7 +2,7 @@ from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render
 from django.conf import settings
 
-from common.spotify import load_user_data
+from common.spotify import load_user_data, fetch_token
 
 
 def index(request: HttpRequest) -> HttpResponse:
@@ -15,7 +15,10 @@ def index(request: HttpRequest) -> HttpResponse:
 
 def roast(request: HttpRequest) -> HttpResponse:
     code = request.GET.get(key="code")
-    load_user_data(code) # TODO: Secure stuff if code is not here etc.
+    token = fetch_token(code)
+    load_user_data(token) # TODO: Secure stuff if token is not here etc.
+
     response = HttpResponse(render(request, "roast.html", {}))
-    response.set_cookie("spotify_code", code)
+    response.set_cookie("token", token)
+
     return response

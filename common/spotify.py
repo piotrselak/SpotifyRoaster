@@ -1,3 +1,4 @@
+import json
 from base64 import b64encode
 from concurrent.futures.thread import ThreadPoolExecutor
 
@@ -17,7 +18,7 @@ def fetch_token(code: str) -> str:
                   headers={"Content-Type": "application/x-www-form-urlencoded", "Authorization": f"Basic {encoded_string}"},
                   data={"grant_type": "authorization_code", "code": code, "redirect_uri": settings.SPOTIFY_REDIRECT_URI})
 
-    json_response = response.json()
+    json_response = json.dumps(response.json())
     validated = AccessTokenBody.model_validate_json(json_response, strict=True) # TODO: Handle errors
 
     return validated.access_token # TODO Maybe remake into returning the rest as well
@@ -34,7 +35,7 @@ def _load_user_data(token: str):
 def _get_user_top_items(token: str):
     item_types = ["artists", "tracks"]
     url = "https://api.spotify.com/v1/me/top"
-    limit = 20
+    limit = 20 # TODO: Probably to big number
 
     artists = []
     tracks = []
