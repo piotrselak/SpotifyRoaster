@@ -10,7 +10,10 @@ class AccessTokenBody(BaseModel):
 
 
 class ProfileResponse(BaseModel, extra='ignore'):
-    pass
+    id: str
+    display_name: str
+    uri: str
+    # TODO images
 
 class ArtistDetails(BaseModel, extra='ignore'):
     id: str

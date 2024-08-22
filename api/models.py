@@ -10,7 +10,7 @@ class Artists(models.Model):
 
 class SpotifyUser(models.Model):
     id = models.CharField(max_length=255, primary_key=True)
-    image_uri = models.CharField(max_length=255)
+    #TODO image_uri = models.CharField(max_length=255)
     profile_uri = models.CharField(max_length=255)
     tracks = models.ManyToManyField(Tracks)
     artists = models.ManyToManyField(Artists)

@@ -5,7 +5,8 @@ from concurrent.futures.thread import ThreadPoolExecutor
 import requests
 from django.conf import settings
 
-from common.spotify.dto import AccessTokenBody, TopArtistsResponse, TopTracksResponse, ArtistDetails, AlbumDetails
+from common.spotify.dto import AccessTokenBody, TopArtistsResponse, TopTracksResponse, ArtistDetails, AlbumDetails, \
+    ProfileResponse
 
 executor = ThreadPoolExecutor(max_workers=4) # TODO think about number here
 
@@ -31,6 +32,7 @@ def load_user_data(token: str):
 
 def _load_user_data(token: str):
     artists, tracks = _get_user_top_items(token)
+    profile = _get_user_profile(token)
 
 def _get_user_top_items(token: str) -> tuple[list[ArtistDetails], list[AlbumDetails]]:
     url = "https://api.spotify.com/v1/me/top"
@@ -42,12 +44,13 @@ def _get_user_top_items(token: str) -> tuple[list[ArtistDetails], list[AlbumDeta
                .items) # TODO Handle errors
 
     tracks_response = requests.get(f"{url}/tracks?limit={limit}", headers={"Authorization": f"Bearer {token}"}).json()
-    print(tracks_response)
     tracks = (TopTracksResponse
               .model_validate_json(json.dumps(tracks_response))
               .items) # TODO Handle errors
 
     return artists, tracks
 
-def _get_user_profile():
-    pass
+def _get_user_profile(token: str) -> ProfileResponse:
+    profile_response = requests.get("https://api.spotify.com/v1/me", headers={"Authorization": f"Bearer {token}"}).json()
+    profile = ProfileResponse.model_validate_json(json.dumps(profile_response)) # TODO Handle errors
+    return profile

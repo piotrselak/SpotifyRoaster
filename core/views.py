@@ -10,7 +10,7 @@ def index(request: HttpRequest) -> HttpResponse:
                         f'?client_id={settings.SPOTIFY_CLIENT_ID}'
                         '&response_type=code'
                         f'&redirect_uri={settings.SPOTIFY_REDIRECT_URI}' # TODO: change later
-                        '&scope=user-top-read')
+                        '&scope=user-top-read user-read-private user-read-email')
     return HttpResponse(render(request, "index.html", {"spotify_authorize_url": spotify_auth_url}))
 
 def roast(request: HttpRequest) -> HttpResponse:
