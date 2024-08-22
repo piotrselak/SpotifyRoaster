@@ -27,6 +27,7 @@ class TrackDetail(BaseModel, extra='ignore'):
     artists: list[ArtistDetails]
     name: str
     album_type: str
+    id: str
 
 class AlbumDetails(BaseModel, extra='ignore'):
     album: TrackDetail

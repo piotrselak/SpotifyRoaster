@@ -5,6 +5,7 @@ from concurrent.futures.thread import ThreadPoolExecutor
 import requests
 from django.conf import settings
 
+from api.models import SpotifyUser, Artist, Track
 from common.spotify.dto import AccessTokenBody, TopArtistsResponse, TopTracksResponse, ArtistDetails, AlbumDetails, \
     ProfileResponse
 
@@ -26,18 +27,41 @@ def fetch_token(code: str) -> str:
 
 
 # TODO First check if data is already in database, if its older than 30 days, then refetch if not, use this data
-# TODO: Probably move it so the items are fetched to db when user exits
 def load_user_data(token: str):
     return executor.submit(_load_user_data, token)
 
+# TODO Error handling everywhere
 def _load_user_data(token: str):
-    artists, tracks = _get_user_top_items(token)
-    profile = _get_user_profile(token)
+    artists_data, tracks_data = _get_user_top_items(token)
+    profile_data = _get_user_profile(token)
+
+    profile, _ = SpotifyUser.objects.get_or_create(id=profile_data.id, name=profile_data.display_name, profile_uri=profile_data.uri)
+
+
+    for artist_data in artists_data:
+        artist, _ = Artist.objects.get_or_create(id=artist_data.id, name=artist_data.name)
+        if artist not in profile.artists.all():
+            profile.artists.add(artist)
+
+
+    for track_data_i in tracks_data:
+        track_data = track_data_i.album
+        track, _ = Track.objects.get_or_create(id=track_data.id, name=track_data.name)
+
+        for track_artist in track_data.artists:
+            artist, _ = Artist.objects.get_or_create(id=track_artist.id, name=track_artist.name)
+            if artist not in track.artists.all():
+                track.artists.add(artist)
+
+        if track not in profile.tracks.all():
+            profile.tracks.add(track)
+
 
 def _get_user_top_items(token: str) -> tuple[list[ArtistDetails], list[AlbumDetails]]:
     url = "https://api.spotify.com/v1/me/top"
     limit = 5 # TODO: Figure perfect number
 
+    # TODO: maybe cut artists out? Idk if super needed given the tracks have artists assigned to those
     artists_response = requests.get(f"{url}/artists?limit={limit}", headers={"Authorization": f"Bearer {token}"}).json()
     artists = (TopArtistsResponse
                .model_validate_json(json.dumps(artists_response))
