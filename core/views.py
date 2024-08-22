@@ -2,7 +2,7 @@ from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render
 from django.conf import settings
 
-from common.spotify import load_user_data, fetch_token
+from common.spotify import fetch_token, load_user_data
 
 
 def index(request: HttpRequest) -> HttpResponse:

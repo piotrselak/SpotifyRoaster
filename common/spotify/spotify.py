@@ -5,7 +5,7 @@ from concurrent.futures.thread import ThreadPoolExecutor
 import requests
 from django.conf import settings
 
-from common.dto import AccessTokenBody
+from common.spotify.dto import AccessTokenBody, TopArtistsResponse, TopTracksResponse, ArtistDetails, AlbumDetails
 
 executor = ThreadPoolExecutor(max_workers=4) # TODO think about number here
 
@@ -30,20 +30,24 @@ def load_user_data(token: str):
     return executor.submit(_load_user_data, token)
 
 def _load_user_data(token: str):
-    _get_user_top_items(token)
+    artists, tracks = _get_user_top_items(token)
 
-def _get_user_top_items(token: str):
-    item_types = ["artists", "tracks"]
+def _get_user_top_items(token: str) -> tuple[list[ArtistDetails], list[AlbumDetails]]:
     url = "https://api.spotify.com/v1/me/top"
-    limit = 20 # TODO: Probably to big number
+    limit = 5 # TODO: Figure perfect number
 
-    artists = []
-    tracks = []
+    artists_response = requests.get(f"{url}/artists?limit={limit}", headers={"Authorization": f"Bearer {token}"}).json()
+    artists = (TopArtistsResponse
+               .model_validate_json(json.dumps(artists_response))
+               .items) # TODO Handle errors
 
-    for item_type in item_types:
-        response = requests.get(f"{url}/{item_type}?limit={limit}", headers={"Authorization": f"Bearer {token}"}).json()
-        print(response)
-    pass
+    tracks_response = requests.get(f"{url}/tracks?limit={limit}", headers={"Authorization": f"Bearer {token}"}).json()
+    print(tracks_response)
+    tracks = (TopTracksResponse
+              .model_validate_json(json.dumps(tracks_response))
+              .items) # TODO Handle errors
+
+    return artists, tracks
 
 def _get_user_profile():
     pass
