@@ -20,6 +20,10 @@ SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
 SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
 SPOTIFY_REDIRECT_URI = os.getenv("SPOTIFY_REDIRECT_URI")
 
+OPENAI_SECRET = os.getenv("OPENAI_SECRET")
+OPENAI_ORG_ID = os.getenv("OPENAI_ORG_ID")
+OPENAI_PROJECT_ID = os.getenv("OPENAI_PROJECT_ID")
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
