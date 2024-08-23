@@ -1,6 +1,7 @@
 from django.urls import path
 
+from api import views
 
 urlpatterns = [
-    #path('data', views.SpotifyView.as_view(), name='spotify_data'),
+    path('generate', views.APIView.as_view(), name='generator'),
 ]

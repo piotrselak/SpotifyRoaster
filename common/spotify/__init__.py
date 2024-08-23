@@ -1,1 +1,1 @@
-from common.spotify.spotify import fetch_token, load_user_data
+from common.spotify.spotify import fetch_token, load_user_data, get_user_profile

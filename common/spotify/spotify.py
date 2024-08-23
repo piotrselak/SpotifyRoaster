@@ -33,7 +33,7 @@ def load_user_data(token: str):
 # TODO Error handling everywhere
 def _load_user_data(token: str):
     artists_data, tracks_data = _get_user_top_items(token)
-    profile_data = _get_user_profile(token)
+    profile_data = get_user_profile(token)
 
     profile, _ = SpotifyUser.objects.get_or_create(id=profile_data.id, name=profile_data.display_name, profile_uri=profile_data.uri)
 
@@ -74,7 +74,7 @@ def _get_user_top_items(token: str) -> tuple[list[ArtistDetails], list[AlbumDeta
 
     return artists, tracks
 
-def _get_user_profile(token: str) -> ProfileResponse:
+def get_user_profile(token: str) -> ProfileResponse:
     profile_response = requests.get("https://api.spotify.com/v1/me", headers={"Authorization": f"Bearer {token}"}).json()
     profile = ProfileResponse.model_validate_json(json.dumps(profile_response)) # TODO Handle errors
     return profile

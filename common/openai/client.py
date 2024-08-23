@@ -2,14 +2,14 @@ from django.conf import settings
 from openai import OpenAI
 from openai.types.chat import ChatCompletionMessage
 
-client = OpenAI(
+_client = OpenAI(
     organization=settings.OPENAI_ORG_ID,
     project=settings.OPENAI_PROJECT_ID,
     api_key=settings.OPENAI_SECRET
 )
 
 def generate_roast(system_message: str, user_message:str) -> ChatCompletionMessage:
-    completion = client.chat.completions.create(model="gpt-4o-mini",
+    completion = _client.chat.completions.create(model="gpt-4o-mini",
         messages=[
             {"role": "system", "content": system_message},
             {
